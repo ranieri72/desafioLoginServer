@@ -5,6 +5,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import main.java.entityDAO.UserDAO;
+import main.java.entityDAO.UserSessionDAO;
 
 public abstract class FactoryDAO {
 
@@ -25,6 +26,11 @@ public abstract class FactoryDAO {
 
 	public static UserDAO getUserDAO() {
 		UserDAO dao = new UserDAO(manager);
+		return dao;
+	}
+
+	public static UserSessionDAO getUserSessionDAO() {
+		UserSessionDAO dao = new UserSessionDAO(manager);
 		return dao;
 	}
 }

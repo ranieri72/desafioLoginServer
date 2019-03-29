@@ -10,7 +10,10 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import main.java.controller.UserController;
+import main.java.entity.RequestLogin;
 import main.java.entity.User;
+import main.java.entity.UserSession;
+import main.java.util.RandomToken;
 
 @Path("/user")
 public class UserResources {
@@ -19,24 +22,54 @@ public class UserResources {
 	@Path("/login")
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response login(User user) {
+	public Response login(RequestLogin login) {
 		UserController userController = new UserController();
-		user = userController.login(user);
-		return Response.ok(user).build();
+		login = userController.login(login);
+		return Response.ok(login).build();
 	}
 
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getStartingPage() {
+	public Response testUser() {
 		try {
+			RequestLogin login = new RequestLogin();
+			
 			User user = new User();
-			user.setEmail("teste");
+			user.setEmail("Ranieri");
 			user.setPassword("123");
-//			UserController userController = new UserController();
-//			user = userController.login(user);
-			return Response.ok(user).build();
+			
+			UserSession session = RandomToken.generateToken(user, 7);
+			
+			login.setUser(user);
+			login.setSession(session);
+			
+			UserController userController = new UserController();
+			login = userController.login(login);
+			return Response.ok(login).build();
 		} catch (Exception e) {
-			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+			RequestLogin login = new RequestLogin();
+			login.setError(e.getLocalizedMessage());
+			return Response.ok(login).status(Status.INTERNAL_SERVER_ERROR).build();
 		}
+	}
+	
+	@GET
+	@Path("/register")
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response registerUser() {
+		try {			
+			User user = new User();
+			user.setEmail("Ranieri");
+			user.setPassword("123");
+			
+			UserController userController = new UserController();
+			userController.register(user);
+			return Response.ok().build();
+		} catch (Exception e) {
+			RequestLogin login = new RequestLogin();
+			login.setError(e.getLocalizedMessage());
+			return Response.ok(login).status(Status.INTERNAL_SERVER_ERROR).build();
+		}
+		
 	}
 }

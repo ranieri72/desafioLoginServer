@@ -1,13 +1,15 @@
 package main.java.entity;
 
-import java.util.Date;
-
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -16,7 +18,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "android_user")
 @XmlRootElement(name = "user")
 public class User {
-	
+
 	@Id
 	@Column(name = "user_id")
 	@XmlElement(name = "user_id")
@@ -29,32 +31,23 @@ public class User {
 
 	@Column(name = "user_password", length = 25, nullable = false)
 	private String password;
-	
-	@Column(name = "user_token", length = 32)
-	private String token;
-	
-	@Column(name = "token_expiration")
-	private Date tokenExpiration;
+
+	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+	@XmlTransient
+	@Transient
+	private UserSession session;
+
+	public UserSession getSession() {
+		return session;
+	}
+
+	public void setSession(UserSession session) {
+		this.session = session;
+	}
 
 	@XmlTransient
 	public long getId() {
 		return id;
-	}
-
-	public String getToken() {
-		return token;
-	}
-
-	public void setToken(String token) {
-		this.token = token;
-	}
-
-	public Date getTokenExpiration() {
-		return tokenExpiration;
-	}
-
-	public void setTokenExpiration(Date tokenExpiration) {
-		this.tokenExpiration = tokenExpiration;
 	}
 
 	public void setId(long id) {
